@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,7 +51,7 @@ public class JSONUtils implements JSONUtilConstants {
                     JSONObject properties = earthquakeItem.getJSONObject(OBJECT_PROPERTIES);
 
                     // Sets the "earthquake" magnitude.
-                    mEarthquake.setMagnitude(properties.optDouble(VALUE_MAG, FALLBACK_MAG));
+                    setMagnitude(properties.optDouble(VALUE_MAG, FALLBACK_MAG));
 
                     // Sets offset and primary location.
                     setOffsetAndLocation(properties.optString(VALUE_PLACE, FALLBACK_STRING));
@@ -70,6 +71,14 @@ public class JSONUtils implements JSONUtilConstants {
             // Parse FAILED or data not present to form a JSONObject.
             return null;
         }
+    }
+
+    /**
+     * Formats the magnitude of earthquake with pattern "0.0".
+     */
+    private static void setMagnitude(double magnitude) {
+        DecimalFormat decimalFormat = new DecimalFormat(PATTERN_DECIMAL);
+        mEarthquake.setMagnitude(Double.parseDouble(decimalFormat.format(magnitude)));
     }
 
     /**
@@ -107,11 +116,11 @@ public class JSONUtils implements JSONUtilConstants {
         Locale locale = new Locale(LOCALE_LANGUAGE, LOCALE_COUNTRY);
 
         // Formats the "date" to pattern -> "MMM dd, yyyy".
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN, locale);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_DATE_FORMAT, locale);
         mEarthquake.setDate(dateFormat.format(date));
 
         // Formats the "date" to pattern -> "h:mm a".
-        SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT_PATTERN, locale);
+        SimpleDateFormat timeFormat = new SimpleDateFormat(PATTERN_TIME_FORMAT, locale);
         mEarthquake.setTime(timeFormat.format(date));
     }
 }

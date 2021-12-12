@@ -1,12 +1,15 @@
 package com.basic.quake_report;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -79,6 +82,9 @@ public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.Ea
     protected class EarthquakeViewHolder extends RecyclerView.ViewHolder implements
             View.OnClickListener {
 
+        // Used to set background color for magnitude.
+        private final Context context;
+
         // Shows the magnitude of the Earthquake.
         private final TextView magnitude;
 
@@ -98,14 +104,49 @@ public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.Ea
         public EarthquakeViewHolder(View itemView) {
             super(itemView);
 
+            // Initialize Context.
+            context = itemView.getContext();
+
             // Attach OnClickListener to "itemView".
             itemView.setOnClickListener(this);
 
+            // Initialize all views.
             magnitude = itemView.findViewById(R.id.magnitude);
             offset = itemView.findViewById(R.id.location_offset);
             location = itemView.findViewById(R.id.primary_location);
             date = itemView.findViewById(R.id.date);
             time = itemView.findViewById(R.id.time);
+        }
+
+        /**
+         * Finds the background to {@link R.id#magnitude} TextView based on earthquake's magnitude.
+         *
+         * @return Background color.
+         */
+        public int getMagnitudeBackground(double magnitude) {
+            switch ((int) magnitude) {
+                case 0:
+                case 1:
+                    return R.color.magnitude1;
+                case 2:
+                    return R.color.magnitude2;
+                case 3:
+                    return R.color.magnitude3;
+                case 4:
+                    return R.color.magnitude4;
+                case 5:
+                    return R.color.magnitude5;
+                case 6:
+                    return R.color.magnitude6;
+                case 7:
+                    return R.color.magnitude7;
+                case 8:
+                    return R.color.magnitude8;
+                case 9:
+                    return R.color.magnitude9;
+                default:
+                    return R.color.magnitude10plus;
+            }
         }
 
         /**
@@ -123,6 +164,11 @@ public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.Ea
             // Sets magnitude.
             this.magnitude.setText(String.valueOf(magnitude));
 
+            // Sets magnitude background.
+            GradientDrawable gradientDrawable = (GradientDrawable) this.magnitude.getBackground();
+            gradientDrawable.setColor(ContextCompat.getColor(context,
+                    getMagnitudeBackground(magnitude)));
+
             // Sets offset.
             this.offset.setText(offset);
 
@@ -130,7 +176,6 @@ public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.Ea
             this.location.setText(location);
 
             // Sets date.
-
             this.date.setText(date);
 
             // Sets time.
