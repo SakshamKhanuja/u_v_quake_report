@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Quake Report</string>
+    <string name="toast_browser">Browser Not Present.</string>
+</resources>
