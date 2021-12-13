@@ -1,4 +1,6 @@
-package com.basic.quake_report;
+package com.basic.quake_report.utils;
+
+import com.basic.quake_report.Earthquake;
 
 import org.json.JSONArray;
 import org.json.JSONException;

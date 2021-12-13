@@ -1,4 +1,4 @@
-package com.basic.quake_report;
+package com.basic.quake_report.utils;
 
 /**
  * Interface contains all constants required to traverse through USGS JSON response.

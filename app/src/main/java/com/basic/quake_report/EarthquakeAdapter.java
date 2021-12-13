@@ -1,8 +1,8 @@
 package com.basic.quake_report;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.EarthquakeViewHolder> {
 
     // Stores a list of Earthquakes.
-    private final ArrayList<Earthquake> mEarthquakeList;
+    private ArrayList<Earthquake> mEarthquakeList;
 
     // Used to provide click facility to Adapter's contents.
     private final EarthquakeListItemClickListener mListItemClickListener;
@@ -40,12 +40,9 @@ public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.Ea
      * Initializes Adapter to provide contents of an ArrayList of type {@link Earthquake} to
      * a RecyclerView.
      *
-     * @param earthquakes           ArrayList containing occurred earthquakes.
      * @param listItemClickListener Interface provides click facility to list items.
      */
-    public EarthquakeAdapter(ArrayList<Earthquake> earthquakes,
-                             EarthquakeListItemClickListener listItemClickListener) {
-        mEarthquakeList = earthquakes;
+    public EarthquakeAdapter(EarthquakeListItemClickListener listItemClickListener) {
         mListItemClickListener = listItemClickListener;
     }
 
@@ -68,6 +65,7 @@ public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.Ea
                 earthquake.getPrimaryLocation(), earthquake.getDate(), earthquake.getTime());
     }
 
+
     @Override
     public int getItemCount() {
         if (mEarthquakeList != null) {
@@ -76,6 +74,18 @@ public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.Ea
 
         // No data present.
         return 0;
+    }
+
+    /**
+     * Sets Earthquake Data.
+     *
+     * @param earthquakes It is the new list of {@link Earthquake} on which this adapter will
+     *                    work.
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void setEarthquakeData(ArrayList<Earthquake> earthquakes) {
+        mEarthquakeList = earthquakes;
+        notifyDataSetChanged();
     }
 
     // Caches the views.
