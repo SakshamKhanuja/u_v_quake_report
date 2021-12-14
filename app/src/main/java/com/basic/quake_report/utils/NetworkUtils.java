@@ -1,7 +1,17 @@
 package com.basic.quake_report.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkRequest;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
+import com.basic.quake_report.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +25,57 @@ import java.util.Scanner;
  */
 public class NetworkUtils implements NetworkUtilsConstants {
 
+    // Shows change in network state to user.
+    private static Toast mToast;
+
     // Setting constructor private.
     private NetworkUtils() {
+    }
+
+    /**
+     * Checks whether internet is available to access USGS API.
+     *
+     * @param context Context accesses ConnectivityManager.
+     */
+    public static void isInternetAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // For Devices running Android API 24 (Nougat) and above.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+            connectivityManager.registerDefaultNetworkCallback(
+                    new ConnectivityManager.NetworkCallback() {
+                        @Override
+                        public void onAvailable(@NonNull Network network) {
+                            Variables.isNetworkConnected = true;
+                        }
+
+                        @Override
+                        public void onLost(@NonNull Network network) {
+                            Variables.isNetworkConnected = false;
+                            // Notify user that network is lost via Toast.
+                            showBrowserNotAvailable(context, R.string.toast_no_internet);
+                        }
+                    });
+        } else {
+            // For Devices running Android API 23 and lower.
+            Variables.isNetworkConnected = (connectivityManager.getActiveNetworkInfo() != null &&
+                    connectivityManager.getActiveNetworkInfo().isConnected());
+        }
+    }
+
+    /**
+     * Notify user about network connectivity changes.
+     */
+    private static void showBrowserNotAvailable(Context context, int message) {
+        // Removes any previous visible Toasts.
+        if (mToast != null) {
+            mToast.cancel();
+        }
+
+        mToast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+        mToast.show();
     }
 
     /**

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.basic.quake_report.databinding.ActivityMainBinding;
 import com.basic.quake_report.utils.JSONUtils;
 import com.basic.quake_report.utils.NetworkUtils;
+import com.basic.quake_report.utils.Variables;
 
 import java.util.ArrayList;
 
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements
         mAdapter = (new EarthquakeAdapter(this));
         mBinding.recyclerEarthquake.setAdapter(mAdapter);
 
+        // Register Network Callbacks.
+        NetworkUtils.isInternetAvailable(this);
+
         // Starts the background task.
         LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements
             mToast.cancel();
         }
 
-        mToast = Toast.makeText(this, getString(R.string.toast_browser), Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(this, R.string.toast_browser, Toast.LENGTH_SHORT);
         mToast.show();
     }
 
@@ -126,18 +130,65 @@ public class MainActivity extends AppCompatActivity implements
         };
     }
 
+    /**
+     * Shows no earthquake data is available.
+     */
+    private void showEmptyView() {
+        // Hide no connectivity TextView.
+        mBinding.textNoInternet.setVisibility(View.GONE);
+        // Hide recycler view.
+        mBinding.recyclerEarthquake.setVisibility(View.GONE);
+        // Notifies user that there is no earthquake data available.
+        mBinding.textNoData.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Shows no internet is available.
+     */
+    private void showNoInternetAvailable() {
+        // Hide data unavailable TextView.
+        mBinding.textNoData.setVisibility(View.GONE);
+        // Hide recycler view.
+        mBinding.recyclerEarthquake.setVisibility(View.GONE);
+        // Shows TextView indicating no internet is available.
+        mBinding.textNoInternet.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Shows available earthquake data.
+     */
+    private void showEarthquakeData() {
+        // Hide no connectivity TextView.
+        mBinding.textNoInternet.setVisibility(View.GONE);
+        // Hides empty view.
+        mBinding.textNoData.setVisibility(View.GONE);
+        // Shows recycler view.
+        mBinding.recyclerEarthquake.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onLoadFinished(@NonNull Loader<ArrayList<Earthquake>> loader,
                                ArrayList<Earthquake> data) {
         // Hide the progress indicator.
         mBinding.progressBar.setVisibility(View.GONE);
 
-        // Notifying RecyclerView that changes to the adapter are made.
-        mAdapter.setEarthquakeData(data);
+        if (data == null || data.size() == 0) {
+            // Check for internet connectivity.
+            if (!Variables.isNetworkConnected) {
+                showNoInternetAvailable();
+            } else {
+                showEmptyView();
+            }
+        } else {
+            showEarthquakeData();
+            // Notifying RecyclerView that changes to the adapter are made.
+            mAdapter.setEarthquakeData(data);
+        }
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<ArrayList<Earthquake>> loader) {
-        //  Method is left EMPTY.
+        // Empty the EarthquakeAdapter.
+        mAdapter.setEarthquakeData(null);
     }
 }

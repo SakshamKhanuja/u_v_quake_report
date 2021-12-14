@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Quake Report</string>
     <string name="toast_browser">Browser Not Present.</string>
+    <string name="text_no_data">No Earthquakes found.</string>
+    <string name="text_no_internet">No Internet Connectivity.</string>
+    <string name="toast_no_internet">Internet Connection Lost.</string>
+    <string name="toast_connected">Connected</string>
 </resources>
