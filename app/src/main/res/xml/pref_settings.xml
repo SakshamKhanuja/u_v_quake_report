@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- User sets "Order By" values here -->
+    <ListPreference
+        android:defaultValue="@string/pref_order_by_default"
+        android:entries="@array/array_order_by_entries"
+        android:entryValues="@array/array_order_by_entry_values"
+        android:key="@string/pref_order_by_value"
+        android:summary="@string/pref_order_by_title_one"
+        android:title="@string/pref_title_order_by" />
+
+    <!-- User sets "Min Magnitude" value here -->
+    <EditTextPreference
+        android:defaultValue="@string/pref_magnitude_default"
+        android:key="@string/pref_magnitude_value"
+        android:summary="@string/pref_magnitude_default"
+        android:inputType="number"
+        android:title="@string/pref_title_magnitude" />
+
+</PreferenceScreen>

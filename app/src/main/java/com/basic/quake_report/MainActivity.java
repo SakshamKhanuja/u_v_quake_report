@@ -6,14 +6,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,7 +30,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
         EarthquakeAdapter.EarthquakeListItemClickListener,
-        LoaderManager.LoaderCallbacks<ArrayList<Earthquake>> {
+        LoaderManager.LoaderCallbacks<ArrayList<Earthquake>>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     // Shows messages to the user.
     private Toast mToast;
@@ -64,8 +69,38 @@ public class MainActivity extends AppCompatActivity implements
         // Register Network Callbacks.
         NetworkUtils.isInternetAvailable(this);
 
+        // Loads earthquake data.
+        startDownloadingEarthquakeData();
+
+        /*
+         * Links a SharedPreference instance that points to the default file with
+         * OnSharedPreferenceChangeListener.
+         */
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    /**
+     * Starts a background operation to download earthquake data from the USGS web-servers.
+     */
+    private void startDownloadingEarthquakeData() {
         // Starts the background task.
         LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+    }
+
+    /**
+     * Restarts the Loader to download new earthquake data. This method is invoked after
+     * a Preference change.
+     */
+    private void startDownloadingNewEarthquakeData() {
+        // Scrolls back to top.
+        mBinding.recyclerEarthquake.scrollToPosition(0);
+
+        // Shows Progress Indicator only.
+        showLoading();
+
+        // Restarts the loader.
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -88,6 +123,23 @@ public class MainActivity extends AppCompatActivity implements
 
         mToast = Toast.makeText(this, R.string.toast_browser, Toast.LENGTH_SHORT);
         mToast.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu layout "main.xml" here.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            // Open Settings Activity.
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @NonNull
@@ -113,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public ArrayList<Earthquake> loadInBackground() {
                 // Downloading earthquake info. here.
-                String jsonResponse = NetworkUtils.getEarthquakeInfo();
+                String jsonResponse = NetworkUtils.getEarthquakeInfo(getContext());
 
                 // Parsing JSON response to an ArrayList of type Earthquake.
                 return JSONUtils.getEarthquakes(jsonResponse);
@@ -128,6 +180,17 @@ public class MainActivity extends AppCompatActivity implements
                 super.deliverResult(data);
             }
         };
+    }
+
+    private void showLoading() {
+        // Hide data unavailable TextView.
+        mBinding.textNoData.setVisibility(View.GONE);
+        // Hide no connectivity TextView.
+        mBinding.textNoInternet.setVisibility(View.GONE);
+        // Hide recycler view.
+        mBinding.recyclerEarthquake.setVisibility(View.GONE);
+        // Shows Progress Indicator.
+        mBinding.progressBar.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -187,8 +250,22 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Unregistering the OnSharedPreferenceChangeListener
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
     public void onLoaderReset(@NonNull Loader<ArrayList<Earthquake>> loader) {
         // Empty the EarthquakeAdapter.
         mAdapter.setEarthquakeData(null);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        startDownloadingNewEarthquakeData();
     }
 }

@@ -32,14 +32,14 @@ public interface NetworkUtilsConstants {
     // Query parameter is used to set the minimum magnitude for earthquakes.
     String PARAMETER_MIN_MAG_KEY = "minmagnitude";
 
-    // Value sets the minimum magnitude to be 2.5.
-    String PARAMETER_MIN_MAG_VALUE = "2.5";
-
     // Query parameter is used to limit the number of earthquake occurrences returned.
     String PARAMETER_LIMIT_KEY = "limit";
 
     // Value sets the max number of returned earthquakes to be 100.
     String PARAMETER_LIMIT_VALUE = "100";
+
+    // Query parameter is used to order earthquakes by either magnitude or time.
+    String PARAMETER_ORDER_BY_KEY = "orderby";
 
     // Used for logging.
     String TAG = "NetworkUtils";

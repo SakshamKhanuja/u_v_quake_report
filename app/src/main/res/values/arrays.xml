@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Contains titles for "Order By" Preference -->
+    <array name="array_order_by_entries">
+        <item>@string/pref_order_by_title_one</item>
+        <item>@string/pref_order_by_title_two</item>
+    </array>
+
+    <!-- Contains values for "Order By" Preference -->
+    <array name="array_order_by_entry_values">
+        <item>@string/pref_order_by_value_one</item>
+        <item>@string/pref_order_by_value_two</item>
+    </array>
+</resources>

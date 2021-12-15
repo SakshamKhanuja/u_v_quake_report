@@ -5,4 +5,18 @@
     <string name="text_no_internet">No Internet Connectivity.</string>
     <string name="toast_no_internet">Internet Connection Lost.</string>
     <string name="toast_connected">Connected</string>
+    <string name="toast_incorrect_type">Enter only numbers</string>
+    <string name="toast_max_min_mag">Limit is 8</string>
+    <string name="settings_menu_item">Settings</string>
+    <string name="settings_title">Earthquake Settings</string>
+    <string name="pref_title_order_by">Order By</string>
+    <string name="pref_order_by_title_one">Magnitude</string>
+    <string name="pref_order_by_title_two">Most Recent</string>
+    <string name="pref_order_by_value_one" translatable="false">magnitude</string>
+    <string name="pref_order_by_value_two" translatable="false">time</string>
+    <string name="pref_order_by_default" translatable="false">@string/pref_order_by_value_one</string>
+    <string name="pref_order_by_value">@string/pref_order_by_default</string>
+    <string name="pref_title_magnitude">Minimum Magnitude</string>
+    <string name="pref_magnitude_default" translatable="false">5</string>
+    <string name="pref_magnitude_value" translatable="false">@string/pref_magnitude_default</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.basic.quake_report.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkRequest;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.basic.quake_report.R;
 
@@ -80,10 +82,12 @@ public class NetworkUtils implements NetworkUtilsConstants {
 
     /**
      * Forms a URL to connect to the USGS API Endpoint to download list of occurred earthquakes.
+     * It takes user preferences from SharedPreference that points to the default file.
      *
+     * @param context It is used access SharedPreferences.
      * @return A URL that points to the 'query' section of the USGS api.
      */
-    private static URL makeUrl() {
+    private static URL makeUrl(Context context) {
         try {
             // Initialize a Uri.Builder object for building a valid URL.
             Uri.Builder builder = Uri.parse(DOMAIN).buildUpon()
@@ -91,8 +95,20 @@ public class NetworkUtils implements NetworkUtilsConstants {
                     .appendQueryParameter(PARAMETER_FORMAT_KEY, PARAMETER_FORMAT_VALUE)
                     .appendQueryParameter(PARAMETER_START_KEY, PARAMETER_START_VALUE)
                     .appendQueryParameter(PARAMETER_END_KEY, PARAMETER_END_VALUE)
-                    .appendQueryParameter(PARAMETER_MIN_MAG_KEY, PARAMETER_MIN_MAG_VALUE)
                     .appendQueryParameter(PARAMETER_LIMIT_KEY, PARAMETER_LIMIT_VALUE);
+
+            // Initialize SharedPreferences to set "Order By" and "Min Magnitude".
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+            // Set user preferred min. mag.
+            builder.appendQueryParameter(PARAMETER_MIN_MAG_KEY, preferences.getString(
+                    context.getString(R.string.pref_magnitude_value),
+                    context.getString(R.string.pref_magnitude_default)));
+
+            // Set user preferred order by.
+            builder.appendQueryParameter(PARAMETER_ORDER_BY_KEY, preferences.getString(
+                    context.getString(R.string.pref_order_by_value),
+                    context.getString(R.string.pref_order_by_default)));
 
             // Forming a URL.
             return new URL(builder.toString());
@@ -106,11 +122,12 @@ public class NetworkUtils implements NetworkUtilsConstants {
      * Connects and retrieves a JSON response containing occurred earthquake info. from USGS Api
      * Endpoint.
      *
+     * @param context It is used to access SharedPreferences.
      * @return A String containing the JSON response.
      */
-    public static String getEarthquakeInfo() {
+    public static String getEarthquakeInfo(Context context) {
         // Get URL to form the network connection.
-        URL url = makeUrl();
+        URL url = makeUrl(context);
 
         if (url != null) {
             // Creates a HTTP request.
